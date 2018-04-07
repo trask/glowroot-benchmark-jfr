@@ -24,14 +24,14 @@
   </licenses>
 
   <properties>
-    <jmc.version>5.5.0.165303</jmc.version>
+    <jmc.version>6.0.0.173920</jmc.version>
   </properties>
 
   <dependencies>
     <dependency>
       <!--
         mvn install:install-file \
-         -Dfile=$JAVA_HOME/lib/missioncontrol/plugins/com.jrockit.mc.common_$JMC_VERSION.jar \
+         -Dfile=$JAVA_HOME/lib/missioncontrol/plugins/com.oracle.jmc.common_$JMC_VERSION.jar \
          -DgroupId=com.oracle.jmc \
          -DartifactId=jmc-commons \
          -Dversion=$JMC_VERSION \
@@ -44,7 +44,7 @@
     <dependency>
       <!--
         mvn install:install-file \
-         -Dfile=$JAVA_HOME/lib/missioncontrol/plugins/com.jrockit.mc.flightrecorder_$JMC_VERSION.jar \
+         -Dfile=$JAVA_HOME/lib/missioncontrol/plugins/com.oracle.jmc.flightrecorder_$JMC_VERSION.jar \
          -DgroupId=com.oracle.jmc \
          -DartifactId=jmc-flightrecorder \
          -Dversion=$JMC_VERSION \
