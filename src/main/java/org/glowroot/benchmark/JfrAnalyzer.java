@@ -24,6 +24,9 @@ public class JfrAnalyzer {
 
 	private static final boolean INCLUDE_LINE_NUMBER = true;
 
+	// this is useful when analyzing startup overhead
+	private static final boolean EXCLUDE_LOAD_CLASS = false;
+
 	private static final Node syntheticRootNode = new Node("");
 	private static int totalSamples = 0;
 
@@ -31,7 +34,6 @@ public class JfrAnalyzer {
 		File jfrFile = new File(args[0]);
 		IItemCollection collection = JfrLoaderToolkit.loadEvents(jfrFile);
 		for (IItemIterable items : collection.apply(ItemFilters.type(JdkTypeIDs.EXECUTION_SAMPLE))) {
-			System.out.println(items.getType().getName());
 			IMemberAccessor<IMCStackTrace, IItem> accessor = JfrAttributes.EVENT_STACKTRACE
 					.getAccessor(items.getType());
 			for (IItem item : items) {
@@ -74,25 +76,22 @@ public class JfrAnalyzer {
 			if (method.getType().getPackageName().startsWith("org.glowroot")
 					&& !method.getType().getPackageName().startsWith("org.glowroot.benchmark")) {
 				analyze = true;
-				analyzeFromIndex = i;
-				if (method.getType().getTypeName().equals("Bytecode")) {
-					analyzeFromIndex = i + 1;
-				}
+				analyzeFromIndex = Math.min(i + 2, frames.size() - 1);
 				break;
 			}
 		}
 		if (!analyze) {
 			return;
 		}
-		// further filter out based on some criteria
-		for (int i = analyzeFromIndex; i >= 0; i--) {
-			IMCFrame frame = frames.get(i);
-			IMCMethod method = frame.getMethod();
-			if (method.getMethodName().equals("loadClass")) {
-				return;
+		if (EXCLUDE_LOAD_CLASS) {
+			for (int i = analyzeFromIndex; i >= 0; i--) {
+				IMCFrame frame = frames.get(i);
+				IMCMethod method = frame.getMethod();
+				if (method.getMethodName().equals("loadClass")) {
+					return;
+				}
 			}
 		}
-
 		Node node = syntheticRootNode;
 		for (int i = analyzeFromIndex; i >= 0; i--) {
 			IMCFrame frame = frames.get(i);
